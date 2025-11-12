@@ -162,7 +162,7 @@ CREATE TABLE IF NOT EXISTS lista_espera (
     INDEX idx_ativo (ativo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---tabela de horarios bloqueados para uso
+-- tabela de horarios bloqueados para uso
 
 CREATE TABLE IF NOT EXISTS horarios_bloqueados (
     id INT AUTO_INCREMENT PRIMARY KEY,
