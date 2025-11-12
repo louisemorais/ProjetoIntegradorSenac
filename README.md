@@ -175,5 +175,16 @@ agendaFacil/backend/
 ├── server.js
 └── ...                  
 ```
+## Próximos Passos e Refatoração
+
+Atualmente, o backend está centralizado no arquivo `server.js`. Em um futuro próximo, planejamos refatorar a estrutura do projeto para manter o código organizado, separando bem as responsabilidades (Separation of Concerns)**.
+
+Isso incluirá a divisão da lógica em módulos mais organizados, como:
+
+*   **`routes/`**: Para definição de todas as rotas da API.
+*   **`controllers/`**: Para o tratamento das requisições e respostas.
+*   **`services/`**: Para a lógica de negócio e a interação com o banco de dados.
+
+Essa refatoração visa melhorar a **manutenção**, **legibilidade** e **escalabilidade** do projeto.
 
 ---
