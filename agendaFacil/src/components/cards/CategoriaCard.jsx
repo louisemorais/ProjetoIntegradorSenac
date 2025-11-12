@@ -1,10 +1,13 @@
 import Card from '@mui/material/Card';
 import Typography from '@mui/material/Typography';
 import { Box } from '@mui/material';
+import { Link } from 'react-router-dom';
 
-export default function CategoriaCard({ title, image}) {
+export default function CategoriaCard({ title, image, color}) {
+  const rotaCard = '/servicos/' + title.replace(/\s+/g, '').toLowerCase();
+
   const baseCard = {
-    width: 270,
+    width: 320,
     height: 400,
     display: 'flex',
     justifyContent: 'center',
@@ -19,15 +22,29 @@ export default function CategoriaCard({ title, image}) {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     position: 'relative',
+    textDecoration: 'none',
   };
 
   return (
     
-    <Card sx={baseCard}>
+    <Card sx={baseCard} component={Link} to={rotaCard}>
+       <Box 
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: `${color}`,
+            opacity: 0.3,
+            pointerEvents: 'none',
+          }}
+        />
         <Box sx={{
             display: 'flex',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
+            position: 'relative',
         }}>
             <Typography variant="h4"
             sx={{
