@@ -19,15 +19,14 @@ const BASE_URL = 'http://localhost:3001/api'; // Adicionei o /api no final da ur
  */
 async function request(endpoint, options = {}) {
   const response = await fetch(`${BASE_URL}${endpoint}`, {
+    ...options,
     headers: {
       'Content-Type': 'application/json',
-    
+      ...(options.headers || {})
     },
     body: options.body ? JSON.stringify(options.body) : undefined,
-    ...options,
   });
 
-  // Se a resposta for 204 no content(sem conteudo), retorna objeto simples de sucesso. entao os proximos nao preciso comentar que vai ser basicamente a mesma coisa 
   if (response.status === 204) {
     return { success: true, message: 'Operação realizada com sucesso' };
   }
