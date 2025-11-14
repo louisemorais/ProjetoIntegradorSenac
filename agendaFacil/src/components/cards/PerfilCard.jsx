@@ -1,6 +1,11 @@
 import {Card, CardContent, CardMedia, Typography, CardActionArea, Rating, Box} from '@mui/material';
 
-export default function PerfilCard({nome, descricao, profissao, categoria, imagem}) {
+export default function PerfilCard({nome, descricao, profissao, categoria, imagem, avaliacao, avaliacaoCount}) {
+
+  const descricaoFormatada = descricao && descricao.length > 100 ? `${descricao.substring(0, 100)}...` : descricao;
+
+  const avaliacaoValue = parseFloat(avaliacao) || 0;
+
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardActionArea>
@@ -14,22 +19,29 @@ export default function PerfilCard({nome, descricao, profissao, categoria, image
           <Typography gutterBottom variant="h5" component="div">
            {nome}
           </Typography>
+
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
            {profissao}
           </Typography>
 
-          <Typography variant="body2" sx={{ color: 'text.primary', fontSize:16}}>
-              {descricao}
-          </Typography>
-
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Rating name="read-only" value={5} readOnly size="small" />
-            <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-              (64)
+          {descricao && (
+            <Typography variant="body2" sx={{ color: 'text.primary', fontSize:16}}>
+              {descricaoFormatada}
             </Typography>
-          </Box>
-          <Typography gutterBottom variant="body1" sx={{ color: 'text.secondary' }}>
-            {categoria}
+          )}
+
+          {avaliacaoValue > 0 && (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Rating name="read-only" value={avaliacao} readOnly size="small" precision={0.1}/>
+              <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
+                {avaliacaoValue.toFixed(1)} ({avaliacaoCount || 0 } avaliações)
+              </Typography>
+
+            </Box>
+          )}
+
+          <Typography gutterBottom variant="body2" sx={{ color: 'text.secondary'}}>
+            {categoria.toUpperCase()}
           </Typography>
 
         </CardContent>
