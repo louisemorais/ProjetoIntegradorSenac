@@ -1,14 +1,22 @@
 import {Card, CardContent, CardMedia, Typography, CardActionArea, Rating, Box} from '@mui/material';
 
-export default function PerfilCard({nome, descricao, profissao, categoria, imagem, avaliacao, avaliacaoCount}) {
+export default function PerfilCard({nome, descricao, profissao, categoria, imagem, avaliacao, avaliacaoCount, rota}) {
 
   const descricaoFormatada = descricao && descricao.length > 100 ? `${descricao.substring(0, 100)}...` : descricao;
 
   const avaliacaoValue = parseFloat(avaliacao) || 0;
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
-      <CardActionArea>
+    <Card sx={{ maxWidth: 345, 
+                backgroundColor:'#E4DDDD',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'transform 0.3s ease',
+                '&:hover': {
+                  transform: 'scale(1.02)',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.1)'
+                } }}>
+
+      <CardActionArea onClick={rota}>
         <CardMedia
           component="img"
           height="140"
@@ -30,13 +38,19 @@ export default function PerfilCard({nome, descricao, profissao, categoria, image
             </Typography>
           )}
 
-          {avaliacaoValue > 0 && (
+          {avaliacaoCount > 0 || avaliacaoValue > 0 ? (
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Rating name="read-only" value={avaliacao} readOnly size="small" precision={0.1}/>
+              <Rating name="read-only" value={avaliacaoValue} readOnly size="small" precision={0.1}/>
               <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
                 {avaliacaoValue.toFixed(1)} ({avaliacaoCount || 0 } avaliações)
               </Typography>
-
+            </Box>
+          ) : (
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Rating name="read-only" value={0} readOnly size="small" precision={0.1}/>
+              <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
+                0.0 (0 avaliações)
+              </Typography>
             </Box>
           )}
 
