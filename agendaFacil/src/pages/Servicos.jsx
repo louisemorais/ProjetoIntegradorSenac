@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import PerfilCard from '../components/cards/PerfilCard';
+import BarraDePesquisa from '../components/search/BarraDePesquisa'
 import { 
   Typography, 
   Grid, 
-  Box, 
-  Card, 
-  CardContent, 
+  Box,
   CircularProgress, 
-  Alert,
-  Button,
-  Chip,
-  Rating
+  Alert
 } from '@mui/material';
 import { api } from '../services/api';
 
@@ -37,6 +34,7 @@ export default function Servicos() {
         const categoriaFormatada = categoria ? categoriaMap[categoria.toLowerCase()] || categoria.toLowerCase() : '';
         const response = await api.prestadores.listar(categoriaFormatada ? { categoria: categoriaFormatada } : {});
         if (response.success) {
+          console.log('Dados Recebidos:', response.data);
           setPrestadores(response.data);
         }
       } catch (err) {
@@ -58,9 +56,12 @@ export default function Servicos() {
 
   return (
     <Box sx={{ padding: '40px', minHeight: '100vh' }}>
-      <Typography variant='h4' sx={{ textAlign: 'center', color: '#213448', fontWeight: 600, marginBottom: '40px' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', width: '90%', gap:'13rem', paddingBottom:'20px' }}>
+        <Typography variant='h4' sx={{color: '#213448', fontWeight: 600}}>
         {categoriaNome}
-      </Typography>
+        </Typography>
+        <BarraDePesquisa />
+      </Box>
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
@@ -78,70 +79,17 @@ export default function Servicos() {
         <Grid container spacing={3} sx={{ justifyContent: 'center' }}>
           {prestadores.map((prestador) => (
             <Grid item key={prestador.id} xs={12} sm={6} md={4}>
-              <Card sx={{ 
-                height: '100%', 
-                display: 'flex', 
-                flexDirection: 'column',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-                transition: 'transform 0.3s ease',
-                '&:hover': {
-                  transform: 'scale(1.02)',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.2)'
-                }
-              }}>
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant='h5' sx={{ color: '#213448', fontWeight: 600, marginBottom: '8px' }}>
-                    {prestador.nome_estabelecimento}
-                  </Typography>
-                  
-                  <Chip 
-                    label={prestador.categoria} 
-                    size="small" 
-                    sx={{ marginBottom: '12px', backgroundColor: '#213448', color: 'white' }}
-                  />
-                  
-                  {prestador.descricao && (
-                    <Typography variant='body2' sx={{ color: '#666', marginBottom: '12px' }}>
-                      {prestador.descricao.length > 100 
-                        ? `${prestador.descricao.substring(0, 100)}...` 
-                        : prestador.descricao}
-                    </Typography>
-                  )}
-                  
-                  <Typography variant='body2' sx={{ color: '#666', marginBottom: '8px' }}>
-                    📍 {prestador.endereco}, {prestador.cidade} - {prestador.estado}
-                  </Typography>
-                  
-                  <Typography variant='body2' sx={{ color: '#666', marginBottom: '8px' }}>
-                    🕐 {prestador.horario_abertura} - {prestador.horario_fechamento}
-                  </Typography>
-                  
-                  {prestador.avaliacao_media > 0 && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, marginBottom: '12px' }}>
-                      <Rating value={prestador.avaliacao_media} precision={0.1} readOnly size="small" />
-                      <Typography variant='body2' sx={{ color: '#666' }}>
-                        {(parseFloat(prestador.avaliacao_media) || 0).toFixed(1)} ({prestador.total_avaliacoes} avaliações)
-                      </Typography>
-                    </Box>
-                  )}
-                  
-                  <Typography variant='body2' sx={{ color: '#666', marginBottom: '16px' }}>
-                    {prestador.total_servicos} serviço(s) disponível(is)
-                  </Typography>
-                  
-                  <Button 
-                    variant="contained" 
-                    fullWidth
-                    onClick={() => handleVerDetalhes(prestador.id)}
-                    sx={{ 
-                      backgroundColor: '#213448',
-                      '&:hover': { backgroundColor: '#3b5876' }
-                    }}
-                  >
-                    Ver Detalhes
-                  </Button>
-                </CardContent>
-              </Card>
+              
+
+              <PerfilCard nome={prestador.nome_estabelecimento}
+              // profissao={}
+              descricao={prestador.descricao}
+              categoria={prestador.categoria}
+              imagem={prestador.imagem_url}
+              avaliacao={prestador.avaliacao_media}
+              avaliacaoCount={prestador.total_avaliacoes}
+              rota={() => handleVerDetalhes(prestador.id)}
+               />
             </Grid>
           ))}
         </Grid>
