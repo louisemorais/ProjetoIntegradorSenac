@@ -4,7 +4,7 @@ import CategoriaCard from '../components/cards/CategoriaCard'
 import Saude from '../imgs/category/saude.png'
 import Arte from '../imgs/category/arte.jpg'
 import Beleza from '../imgs/category/beleza.jpg'
-import SocialMedia from '../imgs/category/socialmedia.jpg'
+import SocialMedia from '../imgs/category/socialMedia.jpg'
 
 export default function Home() {
 
