@@ -7,8 +7,8 @@ const SearchContainer = styled('div')({
   alignItems: 'center',
   backgroundColor: '#e5e5e5',
   borderRadius: '12px',
-  padding: '8px 15px',
-  width: '400px',
+  padding: '4px 15px',
+  width: '320px',
 });
 
 const Input = styled(InputBase)({
@@ -23,7 +23,7 @@ const Input = styled(InputBase)({
 export default function BarraDePesquisa() {
   return (
     <SearchContainer>
-      <SearchIcon style={{ color: '#444', fontSize:'30px' }} />
+      <SearchIcon style={{ color: '#444', fontSize:'25px' }} />
       <Input placeholder="Pesquise serviços ou prestadores" />
     </SearchContainer>
   );
