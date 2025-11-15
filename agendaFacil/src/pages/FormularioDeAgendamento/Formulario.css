@@ -1,0 +1,60 @@
+.formulario-background {
+    width: 60vw;
+    height: 80vh;
+    display: flex;
+    border-radius: 10px;
+    border: 1.5px solid #ccc;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.formulario-form {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.inputFields-background {
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.agendamento-linha {
+    width: 100%;
+    height: 35%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.calendario-background {
+    width: 60%;
+    height: 100%;
+}
+
+.selector-background {
+    width: 30%;
+    height: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.botao-enviar {
+    width: 98%;
+    height: 5%;
+    background-color: #213448;
+    border-radius: 5px;
+    color: white;
+    border: 0px solid transparent;
+}
+
+.botao-enviar:hover {
+    background-color: #1b2f3e;
+    cursor: pointer;
+}
