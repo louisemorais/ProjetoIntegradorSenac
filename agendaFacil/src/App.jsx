@@ -8,6 +8,7 @@ import Agendamento from './pages/Agendamento'
 import MeusAgendamentos from './pages/MeusAgendamentos'
 import Perfil from './pages/Perfil'
 import NavBar from './components/navbar/NavBar'
+import Footer from './components/footer/Footer'
 import './App.css'
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/meus-agendamentos" element={<MeusAgendamentos />} />
           <Route path="/perfil" element={<Perfil />} />
         </Routes>
+      <Footer />
     </>
   )
 }
