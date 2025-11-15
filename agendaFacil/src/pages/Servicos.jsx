@@ -52,16 +52,39 @@ export default function Servicos() {
     navigate(`/prestador/${prestadorId}`);
   };
 
-  const categoriaNome = categoria ? categoria.charAt(0).toUpperCase() + categoria.slice(1) : 'Todos os Serviços';
+  const formatarCategoriaNome = (texto) => {
+    if (!texto) return '';
+
+    return texto
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .replace(/([a-z]{2,})(?=[A-Z])/g, '$1 ')
+      .replace(/(servicos|tecnicos|todas|categorias|social|media)/gi, ' $1 ')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .toLowerCase()
+      .replace(/(?:^|\s)\S/g, (l) => l.toUpperCase());
+  };
+
+  const categoriaNome = categoria ? formatarCategoriaNome(categoria) : 'Todos os Serviços';
 
   return (
     <Box sx={{ padding: '40px', minHeight: '100vh' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'end', alignItems: 'center', width: '90%', gap:'13rem', paddingBottom:'20px' }}>
-        <Typography variant='h4' sx={{color: '#213448', fontWeight: 600}}>
-        {categoriaNome}
+      
+      <Box
+        sx={{width: '100%',display: 'flex',alignItems: 'center',justifyContent: 'center',
+            position: 'relative',marginBottom: '30px',}}>
+        
+        <Typography variant="h4" sx={{ color: '#213448', fontWeight: 600, textAlign: 'center',}}>
+          {categoriaNome}
         </Typography>
-        <BarraDePesquisa />
+    
+        <Box
+          sx={{position: 'absolute',right: 40, top: '50%',transform: 'translateY(-50%)'}}>
+          <BarraDePesquisa />
+        </Box>
+
       </Box>
+
 
       {loading ? (
         <Box sx={{ display: 'flex', justifyContent: 'center', padding: '40px' }}>
