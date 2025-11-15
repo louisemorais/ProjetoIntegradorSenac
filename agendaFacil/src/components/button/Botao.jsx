@@ -1,7 +1,7 @@
 import styled from '@emotion/styled';
 import Button from '@mui/material/Button';
 
-export default function Botao({nome}) {
+export default function Botao({nome, onclick}) {
     const Botao = styled(Button)({
         backgroundColor: '#213448',
         color: '#FFFFFF',
@@ -15,7 +15,7 @@ export default function Botao({nome}) {
     });
   return (
     <>
-        <Botao>{nome}</Botao>
+        <Botao onClick={onclick}>{nome}</Botao>
     </>
   )
 }
