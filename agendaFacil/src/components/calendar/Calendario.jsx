@@ -1,28 +1,24 @@
-import * as React from 'react'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar'
-import dayjs from 'dayjs'
 
-export default function Calendario() {
-    const [selectedDate, setSelectedDate] = React.useState(dayjs())
-
-    // atualiza a data quando o usuário selecionar uma nova
+export default function Calendario({ data, setData }) {
     const handleDateChange = (newDate) => {
-        setSelectedDate(newDate)
+        setData(newDate)
     }
 
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DateCalendar
-                value={selectedDate}
+                value={data}
                 onChange={handleDateChange}
                 sx={{
                     borderRadius: 2,
+                    border: "1.5px solid #ccc",
                     boxShadow: '0px 2px 8px rgba(0,0,0,0.08)',
-                    p: 1,
-                    width: 350,
-                    margin: '0 auto',
+                    width: "100%",
+                    transform: 'scale(0.58)',
+                    transformOrigin: 'top center',
                 }}
             />
         </LocalizationProvider>
