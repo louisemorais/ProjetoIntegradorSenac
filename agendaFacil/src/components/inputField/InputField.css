@@ -1,16 +1,19 @@
 .inputFieldBackground {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    margin-bottom: 10px;
-    padding: 5px;
+    width: 98%;
+}
+
+.inputField-label {
+    font-size: small;
 }
 
 .inputField {
     width: 100%;
-    padding: 10px;
+    height: 25px;
     border: 1px solid #ccc;
-    border-radius: 10px;
-    font-size: 16px;
+    border-radius: 5px;
+    font-size: x-small ;
     box-sizing: border-box;
+    padding-left: 5px;
 }
