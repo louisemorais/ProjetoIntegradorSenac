@@ -194,9 +194,9 @@ INSERT INTO usuarios (nome, email, senha, telefone, tipo_usuario, foto_perfil) V
 
 -- insere prestadores
 INSERT INTO prestadores (usuario_id, nome_estabelecimento, categoria, descricao, endereco, cidade, estado, cep, horario_abertura, horario_fechamento, tempo_medio_atendimento, dias_funcionamento, aceita_pagamento_online) VALUES
-(2, 'Salão Marina Oliveira', 'beleza', 'Salão especializado em cortes femininos e masculinos, coloração, mechas e tratamentos capilares.', 'Rua das Flores, 123', 'São Paulo', 'SP', '01234-567', '09:00:00', '19:00:00', 60, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', TRUE),
-(3, 'Clínica Dra. Josefina Lima', 'saude', 'Clínica médica com especialidades em clínica geral, pediatria e ginecologia. Equipe de 8 profissionais.', 'Av. Paulista, 1000', 'São Paulo', 'SP', '01310-100', '08:00:00', '18:00:00', 30, '["segunda", "terca", "quarta", "quinta", "sexta"]', TRUE),
-(4, 'Auto Reparo Carlos', 'servicos_tecnicos', 'Oficina mecânica especializada em manutenção preventiva e corretiva de veículos.', 'Rua do Comércio, 456', 'São Paulo', 'SP', '02345-678', '08:00:00', '18:00:00', 120, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', FALSE);
+(2, 'Salão Marina Oliveira', 'Beleza', 'Salão especializado em cortes femininos e masculinos, coloração, mechas e tratamentos capilares.', 'Rua das Flores, 123', 'São Paulo', 'SP', '01234-567', '09:00:00', '19:00:00', 60, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', TRUE),
+(3, 'Clínica Dra. Josefina Lima', 'Saude', 'Clínica médica com especialidades em clínica geral, pediatria e ginecologia. Equipe de 8 profissionais.', 'Av. Paulista, 1000', 'São Paulo', 'SP', '01310-100', '08:00:00', '18:00:00', 30, '["segunda", "terca", "quarta", "quinta", "sexta"]', TRUE),
+(4, 'Auto Reparo Carlos', 'Serviços Técnicos', 'Oficina mecânica especializada em manutenção preventiva e corretiva de veículos.', 'Rua do Comércio, 456', 'São Paulo', 'SP', '02345-678', '08:00:00', '18:00:00', 120, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', FALSE);
 
 -- insere servicos
 INSERT INTO servicos (prestador_id, nome, descricao, duracao, preco) VALUES
