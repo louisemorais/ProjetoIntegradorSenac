@@ -1,14 +1,14 @@
-import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
-import { Box } from '@mui/material';
+import { Box,Typography, Card} from '@mui/material';
 import { Link } from 'react-router-dom';
 
-export default function CategoriaCard({ title, image, color}) {
+
+export default function CategoriaCard({ title, image, color, rota}) {
   const rotaCard = '/servicos/' + title.replace(/\s+/g, '').toLowerCase();
+  const rotaFinal = rota || rotaCard;
 
   const baseCard = {
-    width: 320,
-    height: 400,
+    width: 350,
+    height: 320,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -27,8 +27,8 @@ export default function CategoriaCard({ title, image, color}) {
 
   return (
     
-    <Card sx={baseCard} component={Link} to={rotaCard}>
-       <Box 
+    <Card sx={baseCard} component={Link} to={rotaFinal}>
+        <Box 
           sx={{
             position: 'absolute',
             top: 0,
@@ -40,22 +40,22 @@ export default function CategoriaCard({ title, image, color}) {
             pointerEvents: 'none',
           }}
         />
-        <Box sx={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            position: 'relative',
-        }}>
-            <Typography variant="h4"
-            sx={{
-                color: '#fff',
-                fontWeight: 'bold',
-                textAlign: 'center'
-            }}
-            >
-            {title}
-            </Typography>
-        </Box>
+          <Box sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              position: 'relative',
+          }}>
+              <Typography variant="h4"
+              sx={{
+                  color: '#fff',
+                  fontWeight: 'bold',
+                  textAlign: 'center'
+              }}
+              >
+              {title}
+              </Typography>
+          </Box>
     </Card>
   );
 }
