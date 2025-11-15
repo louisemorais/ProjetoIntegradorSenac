@@ -76,12 +76,23 @@ export default function NavBar() {
             Início
           </Button>
           {usuario ? (
-            <><Button color="inherit" sx={navLink} onClick={() => navigate('/servicos')}>
+            <>
+              <Button
+                color="inherit"
+                sx={navLink}
+                onClick={() => {
+                  if (location.pathname !== '/') {
+                    navigate('/', { state: { scrollTo: 'servicos' } });
+                  } else {
+                    const el = document.getElementById('servicos');
+                    el?.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+              >
                 Serviços
               </Button>
-              <Button color="inherit" sx={navLink} onClick={() => navigate('/meus-agendamentos')}>
-                Agendamentos
-              </Button>
+
+
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Avatar
                   src={usuario.foto_perfil}
