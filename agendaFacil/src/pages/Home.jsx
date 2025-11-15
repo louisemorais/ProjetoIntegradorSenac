@@ -2,30 +2,43 @@ import './Home.css';
 import { Typography, Grid, Box, CircularProgress, Alert } from '@mui/material';
 import { useState, useEffect } from 'react';
 import CategoriaCard from '../components/cards/CategoriaCard'
-import Footer from '../components/footer/Footer'
 import Saude from '../imgs/category/saude.png'
 import Arte from '../imgs/category/arte.jpg'
 import Beleza from '../imgs/category/beleza.jpg'
 import SocialMedia from '../imgs/category/socialMedia.jpg'
+import AllCategory from '../imgs/category/todasAsCategorias.jpg'
+import ServicosTecnicos from '../imgs/category/servicosTecnicos.jpg'
+import { useLocation } from 'react-router-dom';
+
 import { api } from '../services/api';
 
 export default function Home() {
   const [prestadoresDestaque, setPrestadoresDestaque] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const location = useLocation();
 
-  const categorias = [{
-    id: 1, nome: 'Beleza', image: Beleza, cor:'#DAA0A0'
+  const categorias = [
+  {
+    id: 1, nome: 'Todas as Categorias', image: AllCategory, rota: '/servicos', cor:'#b45a0bff'
+  },
+  
+  {
+    id: 2, nome: 'Beleza', image: Beleza, cor:'#DAA0A0'
   }, 
   {
-    id: 2, nome: 'Saude', image: Saude, cor:'#5F84FF'
+    id: 3, nome: 'Saude', image: Saude, cor:'#5F84FF'
   }, 
   {
-    id: 3, nome: 'Arte', image: Arte, cor:'#DBD958'
+    id: 4, nome: 'Arte', image: Arte, cor:'#dedc45ff'
   },
    {
-    id: 4, nome: 'Social Media', image: SocialMedia, cor:'#895FDE'
-  }]
+    id: 5, nome: 'Social Media', image: SocialMedia, cor:'#895FDE'
+  },
+  {
+    id: 6, nome: 'Servicos Tecnicos', image: ServicosTecnicos, cor:'#1ea499ff'
+  },
+]
 
   useEffect(() => {
     const buscarPrestadores = async () => {
@@ -33,7 +46,6 @@ export default function Home() {
         setLoading(true);
         const response = await api.prestadores.listar();
         if (response.success) {
-          // Pegar os top 3 prestadores em destaque
           setPrestadoresDestaque(response.data.slice(0, 3));
         }
       } catch (err) {
@@ -47,6 +59,15 @@ export default function Home() {
     buscarPrestadores();
   }, []);
 
+  useEffect(() => {
+    if (location.state?.scrollTo === 'servicos') {
+      const el = document.getElementById('servicos');
+      setTimeout(() => {
+        el?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
+    }
+  }, [location]);
+
   return (
     <div>
       <section className="home-section">
@@ -56,11 +77,11 @@ export default function Home() {
         </div>
       </section>
 
-        <Box component={'section'} sx={{paddingTop:'50px', paddingBottom:'50px'}}>
+        <Box component={'section'} sx={{paddingTop:'50px', paddingBottom:'50px'}} id="servicos">
           <Typography variant='h4' sx={{textAlign:'center', color:'#213448', fontWeight:600}}>Serviços</Typography>
-          <Grid container spacing={5} sx={{padding:'40px', justifyContent:'center'}}>
+          <Grid container spacing={5}  sx={{padding:'40px', justifyContent:'center'}}>
             {categorias.map((card)=>(
-              <CategoriaCard key={card.id} title={card.nome} image={card.image} color={card.cor}/>
+              <CategoriaCard key={card.id} title={card.nome} image={card.image} color={card.cor} rota={card.rota}/>
             ))}
           </Grid>
         </Box>
@@ -114,8 +135,6 @@ export default function Home() {
             )}
           </Box>
         )}
-
-        <Footer />
       
     </div>
   );
