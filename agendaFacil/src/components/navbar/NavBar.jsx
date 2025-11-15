@@ -91,7 +91,9 @@ export default function NavBar() {
               >
                 Serviços
               </Button>
-
+                <Button color="inherit" sx={navLink} onClick={() => navigate('/meus-agendamentos')}>
+                Agendamentos
+                </Button>
 
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Avatar
