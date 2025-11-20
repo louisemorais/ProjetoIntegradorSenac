@@ -1,6 +1,5 @@
 import {Routes, Route} from 'react-router-dom'
 import Home from './pages/Home'
-import ScrollToTop from './components/scrollToTop/ScrollToTop'
 import Servicos from './pages/Servicos'
 import Login from './pages/Login'
 import Registro from './pages/Registro'
@@ -16,18 +15,17 @@ function App() {
   return (
     <>
       <NavBar/>
-      <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Home/>} />
-          <Route path="/servicos" element={<Servicos />} />        
-          <Route path="/servicos/:categoria" element={<Servicos />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/registro" element={<Registro />} />
-          <Route path="/prestador/:id" element={<DetalhesPrestador />} />
-          <Route path="/agendamento/:prestadorId/:servicoId" element={<Agendamento />} />
-          <Route path="/meus-agendamentos" element={<MeusAgendamentos />} />
-          <Route path="/perfil" element={<Perfil />} />
-        </Routes>
+      <Routes>
+        <Route path="/" element={<Home/>} />
+        <Route path="/servicos" element={<Servicos />} />        
+        <Route path="/servicos/:categoria" element={<Servicos />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/registro" element={<Registro />} />
+        <Route path="/prestador/:id" element={<DetalhesPrestador />} />
+        <Route path="/agendamento/:prestadorId/:servicoId" element={<Agendamento />} />
+        <Route path="/meus-agendamentos" element={<MeusAgendamentos />} />
+        <Route path="/perfil" element={<Perfil />} />
+      </Routes>
       <Footer />
     </>
   )
