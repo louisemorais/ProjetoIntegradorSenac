@@ -7,9 +7,29 @@ CREATE DATABASE IF NOT EXISTS agendafacil CHARACTER SET utf8mb4 COLLATE utf8mb4_
 
 USE agendafacil;
 
+-- Dropa views views, procedures e triggers se existirem
+DROP VIEW IF EXISTS view_agendamentos_completos;
+DROP VIEW IF EXISTS view_prestadores_destaque;
+
+DROP PROCEDURE IF EXISTS buscar_horarios_disponiveis;
+DROP PROCEDURE IF EXISTS estatisticas_prestador;
+
+DROP TRIGGER IF EXISTS atualizar_avaliacao_prestador;
+DROP TRIGGER IF EXISTS criar_notificacao_agendamento;
+
+-- Dropa tabelas
+DROP TABLE IF EXISTS lista_espera;
+DROP TABLE IF EXISTS notificacoes;
+DROP TABLE IF EXISTS avaliacoes;
+DROP TABLE IF EXISTS agendamentos;
+DROP TABLE IF EXISTS servicos;
+DROP TABLE IF EXISTS horarios_bloqueados;
+DROP TABLE IF EXISTS prestadores;
+DROP TABLE IF EXISTS usuarios;
+
 -- tabela de clientes e prestadores
 
-CREATE TABLE IF NOT EXISTS usuarios (
+CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
@@ -27,7 +47,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
 -- tabela do tipo de prestador
 
-CREATE TABLE IF NOT EXISTS prestadores (
+CREATE TABLE prestadores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     nome_estabelecimento VARCHAR(150),
@@ -55,9 +75,23 @@ CREATE TABLE IF NOT EXISTS prestadores (
     INDEX idx_ativo (ativo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- tabela de horarios bloqueados para uso, logica la amebaixo
+
+CREATE TABLE horarios_bloqueados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    prestador_id INT NOT NULL,
+    data_inicio DATETIME NOT NULL,
+    data_fim DATETIME NOT NULL,
+    motivo VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (prestador_id) REFERENCES prestadores(id) ON DELETE CASCADE,
+    INDEX idx_prestador (prestador_id),
+    INDEX idx_datas (data_inicio, data_fim)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- tabela de servicos
 
-CREATE TABLE IF NOT EXISTS servicos (
+CREATE TABLE servicos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     prestador_id INT NOT NULL,
     nome VARCHAR(100) NOT NULL,
@@ -74,7 +108,7 @@ CREATE TABLE IF NOT EXISTS servicos (
 
 -- tabela de agendamentos
 
-CREATE TABLE IF NOT EXISTS agendamentos (
+CREATE TABLE agendamentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
     prestador_id INT NOT NULL,
@@ -105,7 +139,7 @@ CREATE TABLE IF NOT EXISTS agendamentos (
 
 -- tabela de avaliacoes
 
-CREATE TABLE IF NOT EXISTS avaliacoes (
+CREATE TABLE avaliacoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     agendamento_id INT NOT NULL,
     cliente_id INT NOT NULL,
@@ -125,7 +159,7 @@ CREATE TABLE IF NOT EXISTS avaliacoes (
 
 -- tabela de notificacao
 
-CREATE TABLE IF NOT EXISTS notificacoes (
+CREATE TABLE notificacoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
     tipo VARCHAR(50) NOT NULL,
@@ -144,7 +178,7 @@ CREATE TABLE IF NOT EXISTS notificacoes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- tabela de lista de espera
-CREATE TABLE IF NOT EXISTS lista_espera (
+CREATE TABLE lista_espera (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
     prestador_id INT NOT NULL,
@@ -162,19 +196,6 @@ CREATE TABLE IF NOT EXISTS lista_espera (
     INDEX idx_ativo (ativo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- tabela de horarios bloqueados para uso
-
-CREATE TABLE IF NOT EXISTS horarios_bloqueados (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    prestador_id INT NOT NULL,
-    data_inicio DATETIME NOT NULL,
-    data_fim DATETIME NOT NULL,
-    motivo VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (prestador_id) REFERENCES prestadores(id) ON DELETE CASCADE,
-    INDEX idx_prestador (prestador_id),
-    INDEX idx_datas (data_inicio, data_fim)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- dados das personas iniciais
 
@@ -187,6 +208,10 @@ INSERT INTO usuarios (nome, email, senha, telefone, tipo_usuario, foto_perfil) V
 ('Dra. Josefina Lima', 'josefina@clinicalima.com', 'senha123', '11976543210', 'prestador', 'https://randomuser.me/api/portraits/women/29.jpg'),
 ('Carlos Mecânico', 'carlos@autoreparo.com', 'senha123', '11965432109', 'prestador', 'https://randomuser.me/api/portraits/men/1.jpg'),
 
+-- NOVOS PRESTADORES ARTE E SOCIAL MEDIA
+(8, 'Estúdio Cacildis', 'cacildis@arte.com', 'senha123', 'prestador', 'https://randomuser.me/api/portraits/women/57.jpg'),
+(9, 'Agência Ticaricatica', 'ticaricatica@social.com', 'senha123', 'prestador', 'https://randomuser.me/api/portraits/men/78.jpg'),
+
 -- clientes
 ('Jurssicley do Rego Silva', 'jurssicley@email.com', 'senha123', '11954321098', 'cliente', 'https://randomuser.me/api/portraits/men/2.jpg'),
 ('Ana Paula Costa', 'ana@email.com', 'senha123', '11943210987', 'cliente', 'https://randomuser.me/api/portraits/women/3.jpg'),
@@ -195,8 +220,12 @@ INSERT INTO usuarios (nome, email, senha, telefone, tipo_usuario, foto_perfil) V
 -- insere prestadores
 INSERT INTO prestadores (usuario_id, nome_estabelecimento, categoria, descricao, endereco, cidade, estado, cep, horario_abertura, horario_fechamento, tempo_medio_atendimento, dias_funcionamento, aceita_pagamento_online) VALUES
 (2, 'Salão Marina Oliveira', 'Beleza', 'Salão especializado em cortes femininos e masculinos, coloração, mechas e tratamentos capilares.', 'Rua das Flores, 123', 'São Paulo', 'SP', '01234-567', '09:00:00', '19:00:00', 60, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', TRUE),
-(3, 'Clínica Dra. Josefina Lima', 'Saude', 'Clínica médica com especialidades em clínica geral, pediatria e ginecologia. Equipe de 8 profissionais.', 'Av. Paulista, 1000', 'São Paulo', 'SP', '01310-100', '08:00:00', '18:00:00', 30, '["segunda", "terca", "quarta", "quinta", "sexta"]', TRUE),
-(4, 'Auto Reparo Carlos', 'Serviços Técnicos', 'Oficina mecânica especializada em manutenção preventiva e corretiva de veículos.', 'Rua do Comércio, 456', 'São Paulo', 'SP', '02345-678', '08:00:00', '18:00:00', 120, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', FALSE);
+(3, 'Clínica Dra. Josefina Lima', 'Saúde', 'Clínica médica com especialidades em clínica geral, pediatria e ginecologia. Equipe de 8 profissionais.', 'Av. Paulista, 1000', 'São Paulo', 'SP', '01310-100', '08:00:00', '18:00:00', 30, '["segunda", "terca", "quarta", "quinta", "sexta"]', TRUE),
+(4, 'Auto Reparo Carlos', 'Serviços Técnicos', 'Oficina mecânica especializada em manutenção preventiva e corretiva de veículos.', 'Rua do Comércio, 456', 'São Paulo', 'SP', '02345-678', '08:00:00', '18:00:00', 120, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', FALSE),
+-- NOVOS PRESTADORES
+(8, 'Estúdio Cacildis', 'Arte', 'Estúdio especializado em design gráfico, ilustrações personalizadas e pinturas a óleo.', 'Rua dos Comunistas, 13', 'São Paulo', 'SP', '03456-789', '10:00:00', '20:00:00', 90, '["terca", "quarta", "quinta", "sexta", "sabado"]', TRUE),
+(9, 'Ticaricatica Marketing Digital', 'Social Media', 'Agência focada em gestão de redes sociais, criação de conteúdo e campanhas de anúncios.', 'Av. Ibirapuera, 500', 'São Paulo', 'SP', '01234-890', '09:00:00', '17:00:00', 60, '["segunda", "terca", "quarta", "quinta", "sexta"]', TRUE);
+
 
 -- insere servicos
 INSERT INTO servicos (prestador_id, nome, descricao, duracao, preco) VALUES
@@ -216,7 +245,15 @@ INSERT INTO servicos (prestador_id, nome, descricao, duracao, preco) VALUES
 -- auto reparo 3
 (3, 'Troca de Óleo', 'Troca de óleo e filtro', 60, 120.00),
 (3, 'Alinhamento e Balanceamento', 'Alinhamento e balanceamento completo', 90, 150.00),
-(3, 'Revisão Completa', 'Revisão geral do veículo', 180, 350.00);
+(3, 'Revisão Completa', 'Revisão geral do veículo', 180, 350.00),
+
+-- NOVOS SERVIÇOS ARTE
+(4, 'Ilustração Digital', 'Criação de arte digital personalizada', 180, 250.00),
+(4, 'Design de Logo', 'Desenvolvimento de identidade visual e logo', 300, 500.00),
+
+-- NOVOS SERVIÇOS SOCIAL MEDIA
+(5, 'Consultoria Mensal', 'Gestão completa de duas redes sociais', 60, 800.00),
+(5, 'Pacote de 10 Posts', 'Criação de 10 artes e legendas para redes', 120, 350.00);
 
 -- exemplo de agendamento pra poc
 INSERT INTO agendamentos (cliente_id, prestador_id, servico_id, data_agendamento, hora_inicio, hora_fim, status, valor_total, observacoes) VALUES
@@ -330,10 +367,10 @@ BEGIN
         WHERE prestador_id = p_prestador_id 
         AND data_agendamento = p_data
         AND status NOT IN ('cancelado', 'nao_compareceu')
+        -- Coloquei logica de sobreposicao de horarios caso tenha agendamento com horario que conflite
         AND (
-            (t.hora >= hora_inicio AND t.hora < hora_fim)
-            OR (ADDTIME(t.hora, SEC_TO_TIME(p_duracao_servico * 60)) > hora_inicio 
-                AND ADDTIME(t.hora, SEC_TO_TIME(p_duracao_servico * 60)) <= hora_fim)
+            ADDTIME(t.hora, SEC_TO_TIME(p_duracao_servico * 60)) > hora_inicio 
+            AND t.hora < hora_fim
         )
     )
     AND NOT EXISTS (
