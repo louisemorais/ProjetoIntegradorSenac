@@ -13,6 +13,7 @@ DROP VIEW IF EXISTS view_prestadores_destaque;
 
 DROP PROCEDURE IF EXISTS buscar_horarios_disponiveis;
 DROP PROCEDURE IF EXISTS estatisticas_prestador;
+DROP PROCEDURE IF EXISTS buscar_prestador_completo;
 
 DROP TRIGGER IF EXISTS atualizar_avaliacao_prestador;
 DROP TRIGGER IF EXISTS criar_notificacao_agendamento;
@@ -24,11 +25,11 @@ DROP TABLE IF EXISTS avaliacoes;
 DROP TABLE IF EXISTS agendamentos;
 DROP TABLE IF EXISTS servicos;
 DROP TABLE IF EXISTS horarios_bloqueados;
+DROP TABLE IF EXISTS imagens_prestadores;
 DROP TABLE IF EXISTS prestadores;
 DROP TABLE IF EXISTS usuarios;
 
 -- tabela de clientes e prestadores
-
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100) NOT NULL,
@@ -46,7 +47,6 @@ CREATE TABLE usuarios (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- tabela do tipo de prestador
-
 CREATE TABLE prestadores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
@@ -54,6 +54,7 @@ CREATE TABLE prestadores (
     cnpj VARCHAR(18),
     categoria VARCHAR(50) NOT NULL,
     descricao TEXT,
+    imagem_url VARCHAR(500) COMMENT 'URL da imagem de destaque do prestador/estabelecimento',
     endereco VARCHAR(255),
     cidade VARCHAR(100),
     estado VARCHAR(2),
@@ -75,8 +76,25 @@ CREATE TABLE prestadores (
     INDEX idx_ativo (ativo)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- tabela de horarios bloqueados para uso, logica la amebaixo
+-- tabela de multiplas imagens para a galeria do prestador
+CREATE TABLE imagens_prestadores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    prestador_id INT NOT NULL,
+    url VARCHAR(500) NOT NULL,
+    tipo ENUM('principal', 'galeria', 'logo', 'banner') DEFAULT 'galeria',
+    ordem INT DEFAULT 0,
+    descricao VARCHAR(255),
+    ativo BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (prestador_id) REFERENCES prestadores(id) ON DELETE CASCADE,
+    INDEX idx_prestador (prestador_id),
+    INDEX idx_tipo (tipo),
+    INDEX idx_ativo (ativo)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+
+-- tabela de horarios bloqueados para uso, logica la amebaixo
 CREATE TABLE horarios_bloqueados (
     id INT AUTO_INCREMENT PRIMARY KEY,
     prestador_id INT NOT NULL,
@@ -90,7 +108,6 @@ CREATE TABLE horarios_bloqueados (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- tabela de servicos
-
 CREATE TABLE servicos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     prestador_id INT NOT NULL,
@@ -107,7 +124,6 @@ CREATE TABLE servicos (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- tabela de agendamentos
-
 CREATE TABLE agendamentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cliente_id INT NOT NULL,
@@ -138,7 +154,6 @@ CREATE TABLE agendamentos (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- tabela de avaliacoes
-
 CREATE TABLE avaliacoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     agendamento_id INT NOT NULL,
@@ -158,7 +173,6 @@ CREATE TABLE avaliacoes (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- tabela de notificacao
-
 CREATE TABLE notificacoes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     usuario_id INT NOT NULL,
@@ -209,8 +223,8 @@ INSERT INTO usuarios (nome, email, senha, telefone, tipo_usuario, foto_perfil) V
 ('Carlos Mecânico', 'carlos@autoreparo.com', 'senha123', '11965432109', 'prestador', 'https://randomuser.me/api/portraits/men/1.jpg'),
 
 -- NOVOS PRESTADORES ARTE E SOCIAL MEDIA
-(8, 'Estúdio Cacildis', 'cacildis@arte.com', 'senha123', 'prestador', 'https://randomuser.me/api/portraits/women/57.jpg'),
-(9, 'Agência Ticaricatica', 'ticaricatica@social.com', 'senha123', 'prestador', 'https://randomuser.me/api/portraits/men/78.jpg'),
+('Estúdio Cacildis', 'cacildis@arte.com', 'senha123', '11988888888', 'prestador', 'https://randomuser.me/api/portraits/women/57.jpg'),
+('Agência Ticaricatica', 'ticaricatica@social.com', 'senha123', '11977777777', 'prestador', 'https://randomuser.me/api/portraits/men/78.jpg'),
 
 -- clientes
 ('Jurssicley do Rego Silva', 'jurssicley@email.com', 'senha123', '11954321098', 'cliente', 'https://randomuser.me/api/portraits/men/2.jpg'),
@@ -218,13 +232,13 @@ INSERT INTO usuarios (nome, email, senha, telefone, tipo_usuario, foto_perfil) V
 ('Ricardo Almeida', 'ricardo@email.com', 'senha123', '11932109876', 'cliente', 'https://randomuser.me/api/portraits/men/3.jpg');
 
 -- insere prestadores
-INSERT INTO prestadores (usuario_id, nome_estabelecimento, categoria, descricao, endereco, cidade, estado, cep, horario_abertura, horario_fechamento, tempo_medio_atendimento, dias_funcionamento, aceita_pagamento_online) VALUES
-(2, 'Salão Marina Oliveira', 'Beleza', 'Salão especializado em cortes femininos e masculinos, coloração, mechas e tratamentos capilares.', 'Rua das Flores, 123', 'São Paulo', 'SP', '01234-567', '09:00:00', '19:00:00', 60, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', TRUE),
-(3, 'Clínica Dra. Josefina Lima', 'Saúde', 'Clínica médica com especialidades em clínica geral, pediatria e ginecologia. Equipe de 8 profissionais.', 'Av. Paulista, 1000', 'São Paulo', 'SP', '01310-100', '08:00:00', '18:00:00', 30, '["segunda", "terca", "quarta", "quinta", "sexta"]', TRUE),
-(4, 'Auto Reparo Carlos', 'Serviços Técnicos', 'Oficina mecânica especializada em manutenção preventiva e corretiva de veículos.', 'Rua do Comércio, 456', 'São Paulo', 'SP', '02345-678', '08:00:00', '18:00:00', 120, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', FALSE),
+INSERT INTO prestadores (usuario_id, nome_estabelecimento, categoria, descricao, imagem_url, endereco, cidade, estado, cep, horario_abertura, horario_fechamento, tempo_medio_atendimento, dias_funcionamento, aceita_pagamento_online) VALUES
+(2, 'Salão Marina Oliveira', 'Beleza', 'Salão especializado em cortes femininos e masculinos, coloração, mechas e tratamentos capilares.', 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400&h=300&fit=crop&q=80', 'Rua das Flores, 123', 'São Paulo', 'SP', '01234-567', '09:00:00', '19:00:00', 60, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', TRUE),
+(3, 'Clínica Dra. Josefina Lima', 'Saúde', 'Clínica médica com especialidades em clínica geral, pediatria e ginecologia. Equipe de 8 profissionais.', 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=400&h=300&fit=crop&q=80', 'Av. Paulista, 1000', 'São Paulo', 'SP', '01310-100', '08:00:00', '18:00:00', 30, '["segunda", "terca", "quarta", "quinta", "sexta"]', TRUE),
+(4, 'Auto Reparo Carlos', 'Serviços Técnicos', 'Oficina mecânica especializada em manutenção preventiva e corretiva de veículos.', 'https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=400&h=300&fit=crop&q=80', 'Rua do Comércio, 456', 'São Paulo', 'SP', '02345-678', '08:00:00', '18:00:00', 120, '["segunda", "terca", "quarta", "quinta", "sexta", "sabado"]', FALSE),
 -- NOVOS PRESTADORES
-(8, 'Estúdio Cacildis', 'Arte', 'Estúdio especializado em design gráfico, ilustrações personalizadas e pinturas a óleo.', 'Rua dos Comunistas, 13', 'São Paulo', 'SP', '03456-789', '10:00:00', '20:00:00', 90, '["terca", "quarta", "quinta", "sexta", "sabado"]', TRUE),
-(9, 'Ticaricatica Marketing Digital', 'Social Media', 'Agência focada em gestão de redes sociais, criação de conteúdo e campanhas de anúncios.', 'Av. Ibirapuera, 500', 'São Paulo', 'SP', '01234-890', '09:00:00', '17:00:00', 60, '["segunda", "terca", "quarta", "quinta", "sexta"]', TRUE);
+(5, 'Estúdio Cacildis', 'Arte', 'Estúdio especializado em design gráfico, ilustrações personalizadas e pinturas a óleo.', 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=300&fit=crop&q=80', 'Rua dos Comunistas, 13', 'São Paulo', 'SP', '03456-789', '10:00:00', '20:00:00', 90, '["terca", "quarta", "quinta", "sexta", "sabado"]', TRUE),
+(6, 'Ticaricatica Marketing Digital', 'Social Media', 'Agência focada em gestão de redes sociais, criação de conteúdo e campanhas de anúncios.', 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop&q=80', 'Av. Ibirapuera, 500', 'São Paulo', 'SP', '01234-890', '09:00:00', '17:00:00', 60, '["segunda", "terca", "quarta", "quinta", "sexta"]', TRUE);
 
 
 -- insere servicos
@@ -255,24 +269,40 @@ INSERT INTO servicos (prestador_id, nome, descricao, duracao, preco) VALUES
 (5, 'Consultoria Mensal', 'Gestão completa de duas redes sociais', 60, 800.00),
 (5, 'Pacote de 10 Posts', 'Criação de 10 artes e legendas para redes', 120, 350.00);
 
+
+-- Galeria de Imagens
+-- Galeria do Salão Marina Oliveira
+INSERT INTO imagens_prestadores (prestador_id, url, tipo, ordem, descricao) VALUES
+(1, 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800', 'principal', 0, 'Fachada do salão'), -- só essa ta funfando por enquanto. omesmo para as outras categorias, só a principal funciona
+(1, 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800', 'galeria', 1, 'Interior do salão'),
+(1, 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=800', 'galeria', 2, 'Estação de trabalho'),
+(1, 'https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=800', 'galeria', 3, 'Área de espera');
+
+-- Galeria da Clínica Dra. Josefina
+INSERT INTO imagens_prestadores (prestador_id, url, tipo, ordem, descricao) VALUES
+(2, 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=800', 'principal', 0, 'Recepção da clínica'),
+(2, 'https://images.unsplash.com/photo-1538108149393-fbbd81895907?w=800', 'galeria', 1, 'Consultório'),
+(2, 'https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=800', 'galeria', 2, 'Sala de espera');
+
+
 -- exemplo de agendamento pra poc
 INSERT INTO agendamentos (cliente_id, prestador_id, servico_id, data_agendamento, hora_inicio, hora_fim, status, valor_total, observacoes) VALUES
 -- agendamentos confirmados
-(5, 1, 1, '2025-11-15', '10:00:00', '10:45:00', 'confirmado', 50.00, 'Primeira vez no salão'),
-(6, 1, 2, '2025-11-16', '14:00:00', '15:00:00', 'confirmado', 80.00, NULL),
-(7, 2, 6, '2025-11-17', '09:00:00', '09:30:00', 'confirmado', 200.00, NULL),
+(7, 1, 1, '2025-11-15', '10:00:00', '10:45:00', 'confirmado', 50.00, 'Primeira vez no salão'),
+(8, 1, 2, '2025-11-16', '14:00:00', '15:00:00', 'confirmado', 80.00, NULL),
+(9, 2, 6, '2025-11-17', '09:00:00', '09:30:00', 'confirmado', 200.00, NULL),
 
 -- agendamentos concluidos
-(5, 1, 1, '2025-11-05', '10:00:00', '10:45:00', 'concluido', 50.00, NULL),
-(6, 2, 6, '2025-11-06', '14:00:00', '14:30:00', 'concluido', 200.00, NULL),
+(7, 1, 1, '2025-11-05', '10:00:00', '10:45:00', 'concluido', 50.00, NULL),
+(8, 2, 6, '2025-11-06', '14:00:00', '14:30:00', 'concluido', 200.00, NULL),
 
 -- cancelados
-(7, 1, 2, '2025-11-10', '16:00:00', '17:00:00', 'cancelado', 80.00, 'Cliente cancelou por imprevistos');
+(9, 1, 2, '2025-11-10', '16:00:00', '17:00:00', 'cancelado', 80.00, 'Cliente cancelou por imprevistos');
 
 -- avaliacoes
 INSERT INTO avaliacoes (agendamento_id, cliente_id, prestador_id, nota, comentario) VALUES
-(4, 5, 1, 5, 'Excelente atendimento! Marina é muito profissional e o corte ficou perfeito. Super recomendo!'),
-(5, 6, 2, 5, 'Dra. Josefina é muito atenciosa e competente. Clínica muito bem organizada.');
+(4, 7, 1, 5, 'Excelente atendimento! Marina é muito profissional e o corte ficou perfeito. Super recomendo!'),
+(5, 8, 2, 5, 'Dra. Josefina é muito atenciosa e competente. Clínica muito bem organizada.');
 
 -- atualiza avaliacao dos prestadores
 UPDATE prestadores SET avaliacao_media = 5.00, total_avaliacoes = 1 WHERE id = 1;
@@ -280,7 +310,7 @@ UPDATE prestadores SET avaliacao_media = 5.00, total_avaliacoes = 1 WHERE id = 2
 
 -- exemplo de notificacao
 INSERT INTO notificacoes (usuario_id, tipo, titulo, mensagem, agendamento_id, lida) VALUES
-(5, 'lembrete', 'Lembrete de Agendamento', 'Você tem um agendamento amanhã às 10:00 no Salão Marina Oliveira', 1, FALSE),
+(7, 'lembrete', 'Lembrete de Agendamento', 'Você tem um agendamento amanhã às 10:00 no Salão Marina Oliveira', 1, FALSE),
 (2, 'confirmacao', 'Novo Agendamento', 'Jurssicley do Rego Silva agendou Corte Masculino para 15/11/2025 às 10:00', 1, FALSE);
 
 
@@ -320,8 +350,16 @@ SELECT
     u.nome AS proprietario_nome,
     u.email AS proprietario_email,
     u.telefone AS proprietario_telefone,
+    u.foto_perfil AS proprietario_foto,
     COUNT(DISTINCT s.id) AS total_servicos,
-    COUNT(DISTINCT a.id) AS total_agendamentos
+    COUNT(DISTINCT a.id) AS total_agendamentos,
+    -- Pega a imagem principal da galeria ou usa a imagem_url do prestador (add imgs no front depois)
+    COALESCE(
+        (SELECT url FROM imagens_prestadores 
+         WHERE prestador_id = p.id AND tipo = 'principal' AND ativo = TRUE 
+         LIMIT 1),
+        p.imagem_url
+    ) AS imagem_principal
 FROM prestadores p
 INNER JOIN usuarios u ON p.usuario_id = u.id
 LEFT JOIN servicos s ON p.id = s.prestador_id AND s.ativo = TRUE
@@ -405,8 +443,58 @@ BEGIN
 END //
 DELIMITER ;
 
-
--- triggers
+-- procedure para buscar prestador com imagens
+DELIMITER //
+CREATE PROCEDURE buscar_prestador_completo(IN p_prestador_id INT)
+BEGIN
+    
+    SELECT 
+        p.*,
+        u.nome AS proprietario_nome,
+        u.email AS proprietario_email,
+        u.telefone AS proprietario_telefone,
+        u.foto_perfil AS proprietario_foto
+    FROM prestadores p
+    INNER JOIN usuarios u ON p.usuario_id = u.id
+    WHERE p.id = p_prestador_id;
+    
+    
+    SELECT 
+        id,
+        url,
+        tipo,
+        ordem,
+        descricao
+    FROM imagens_prestadores
+    WHERE prestador_id = p_prestador_id 
+    AND ativo = TRUE
+    ORDER BY ordem;
+    
+    
+    SELECT 
+        id,
+        nome,
+        descricao,
+        duracao,
+        preco
+    FROM servicos
+    WHERE prestador_id = p_prestador_id 
+    AND ativo = TRUE;
+    
+    
+    SELECT 
+        av.nota,
+        av.comentario,
+        av.created_at,
+        u.nome AS cliente_nome,
+        u.foto_perfil AS cliente_foto
+    FROM avaliacoes av
+    INNER JOIN usuarios u ON av.cliente_id = u.id
+    WHERE av.prestador_id = p_prestador_id
+    ORDER BY av.created_at DESC
+    LIMIT 5;
+END //
+DELIMITER ;
 
 -- trigger de atualizacao de avaliacao, faz media automaticamente
 DELIMITER //
@@ -458,3 +546,17 @@ BEGIN
     WHERE p.id = NEW.prestador_id;
 END //
 DELIMITER ;
+
+-- Retorna delimitador ao padrão
+DELIMITER ;
+
+-- Ver todos os prestadores com imagens
+SELECT 
+    id,
+    nome_estabelecimento,
+    categoria,
+    imagem_principal
+FROM view_prestadores_destaque;
+
+-- Testar a nova procedure
+CALL buscar_prestador_completo(1);
