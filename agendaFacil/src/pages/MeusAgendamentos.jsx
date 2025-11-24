@@ -126,7 +126,7 @@ export default function MeusAgendamentos() {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ padding: '40px' }}>
+    <Container maxWidth="lg" sx={{ padding: '40px', minHeight: '80vh' }}>
       <Typography variant='h4' sx={{ textAlign: 'center', color: '#213448', fontWeight: 600, marginBottom: '40px' }}>
         Meus Agendamentos
       </Typography>
