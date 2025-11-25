@@ -402,5 +402,6 @@ Essa refatoração visa melhorar a **manutenção**, **legibilidade** e **escala
 - Anne Daniela
 - Leonardo Ceretta
 - Louise Morais
-- Wallisson Stevan 
-**Projeto Integrador 2025**
+- Wallisson Stevan
+
+#### **Projeto Integrador 2025**
