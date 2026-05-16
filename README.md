@@ -398,10 +398,10 @@ Essa refatoração visa melhorar a **manutenção**, **legibilidade** e **escala
 ---
 <br>
 
-## **Desenvolvido por: Grupo 2 - SENAC - 4º Semestre**
+## **Desenvolvido por: Grupo 11 - SENAC - 5º Semestre**
 - Anne Daniela
 - Leonardo Ceretta
 - Louise Morais
 - Wallisson Stevan
 
-#### **Projeto Integrador 2025**
+#### **Projeto Integrador 2026**
