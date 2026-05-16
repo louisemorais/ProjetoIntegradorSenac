@@ -75,7 +75,7 @@ export default function Footer() {
             © {new Date().getFullYear()} Agenda Fácil. Todos os direitos reservados.
           </Typography>
           <Typography variant="body2" className="footer-developed">
-            Desenvolvido por <strong>Grupo 2 - SENAC</strong>
+            Desenvolvido por <strong>Grupo 11 - SENAC</strong>
           </Typography>
         </Box>
       </Container>
